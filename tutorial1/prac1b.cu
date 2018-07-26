@@ -6,7 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-
+#define BLOCK_NUM 32
+#define THREAD_NUM 128
+#define N (BLOCK_NUM * THREAD_NUM)
 
 //
 // kernel code
@@ -29,11 +31,9 @@ __global__ void add(int *a, int *b, int *c) {
 
 int main(int argc, const char **argv) {
 
-  int nblocks  = 32, nthreads = 128;
 
-  int N = nblocks * nthreads;
 
-  std::vector<int> a(N), b(N), c(N);
+  int a[N], b[N], c[N];
   int *dev_a, *dev_b, *dev_c;
 
   for(int i = 0; i < N; i++) {
