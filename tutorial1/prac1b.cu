@@ -5,65 +5,61 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 
-#include <helper_cuda.h>
 
 
 //
-// kernel routine
+// kernel code
 // 
 
-__global__ void my_first_kernel(float *x)
-{
-  int tid = threadIdx.x + blockDim.x*blockIdx.x;
+__global__ void add(int *a, int *b, int *c) {
 
-  x[tid] = (float) threadIdx.x;
+  int tid = blockIdx.x; // handle the data at this index
+  
+  if(tid < N) {
+    c[tid] = a[tid] + b[tid];
+  }
+
 }
 
 
 //
-// main code
+// host code
 //
 
-int main(int argc, const char **argv)
-{
-  float *h_x, *d_x;
-  int   nblocks, nthreads, nsize, n; 
+int main(int argc, const char **argv) {
 
-  // initialise card
+  int nblocks  = 32, nthreads = 128;
 
-  findCudaDevice(argc, argv);
+  int N = nblocks * nthreads;
 
-  // set number of blocks, and threads per block
+  std::vector<int> a(N), b(N), c(N);
+  int *dev_a, *dev_b, *dev_c;
 
-  nblocks  = 2;
-  nthreads = 8;
-  nsize    = nblocks*nthreads ;
+  for(int i = 0; i < N; i++) {
+    a[i] = -i;
+    b[i] = i * i;
+  }
 
-  // allocate memory for array
+  cudaMalloc((void**)&dev_a, N * sizeof(int));
+  cudaMalloc((void**)&dev_b, N * sizeof(int));
+  cudaMalloc((void**)&dev_c, N * sizeof(int));
 
-  h_x = (float *)malloc(nsize*sizeof(float));
-  checkCudaErrors(cudaMalloc((void **)&d_x, nsize*sizeof(float)));
+  cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
 
-  // execute kernel
-  
-  my_first_kernel<<<nblocks,nthreads>>>(d_x);
-  getLastCudaError("my_first_kernel execution failed\n");
+  add<<<N,1>>>(dev_a, dev_b, dev_c);
 
-  // copy back results and print them out
+  cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
 
-  checkCudaErrors( cudaMemcpy(h_x,d_x,nsize*sizeof(float),
-                 cudaMemcpyDeviceToHost) );
 
-  for (n=0; n<nsize; n++) printf(" n,  x  =  %d  %f \n",n,h_x[n]);
+  for( int i = 0; i < N; i++ ){
+    printf( "cpu: %d, gpu: %d\n", a[i]+b[i], c[i]);
+  }
 
-  // free memory 
-
-  checkCudaErrors(cudaFree(d_x));
-  free(h_x);
-
-  // CUDA exit -- needed to flush printf write buffer
+  cudaFree(dev_a);
+  cudaFree(dev_b);
+  cudaFree(dev_c);
 
   cudaDeviceReset();
 

@@ -1,7 +1,4 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 
 //
 // kernel code
@@ -25,7 +22,7 @@ int main(int argc, char **argv) {
   
   // lanuch the kernel
 
-  my_first_kernel<<<nblocks,nthreads>>>(d_x);
+  my_first_kernel<<<nblocks,nthreads>>>();
 
   // CUDA exit -- needed to flush printf write buffer
 
