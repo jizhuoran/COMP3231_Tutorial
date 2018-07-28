@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define N (1024 * 1024)
+#define N 1024
 
 //
 // kernel code

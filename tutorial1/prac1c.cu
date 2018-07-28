@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define N (1024 * 1024)
+#define N 1024
 
 
 static void cuda_checker(cudaError_t err, const char *file, int line ) {

@@ -47,7 +47,10 @@ int main(int argc, const char **argv) {
 
 
 
-  int a[N], b[N], c[N];
+  int *a, *b, *c;
+  a = (int*) malloc(sizeof(int) * N);  
+  b = (int*) malloc(sizeof(int) * N);  
+  c = (int*) malloc(sizeof(int) * N);  
   int *dev_a, *dev_b, *dev_c;
 
   for(int i = 0; i < N; i++) {
