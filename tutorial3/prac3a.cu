@@ -52,14 +52,14 @@ int main(int argc, const char **argv) {
   c = (float*) malloc(sizeof(float) * M * N);  
   float *dev_a, *dev_b, *dev_c;
 
-  printf( "come to here!!!");
+  printf("come to here!!!");
 
   for(int i = 0; i < M*N; i++) {
     a[i] = 1;
     b[i] = 1;
   }
 
-  printf( "come to here!!!");
+  printf("come to here!!!");
 
   CUDA_CHECK( cudaMalloc((void**)&dev_a, M * N * sizeof(float)) );
   CUDA_CHECK( cudaMalloc((void**)&dev_b, M * N  * sizeof(float)) );
