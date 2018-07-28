@@ -16,9 +16,9 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 const int M = 1024, K = 1024, N = 1024;
 const int TS = 32;
 
-__kernel void myGEMM1(const __global float* A,
-                      const __global float* B, 
-                                     float* C) {
+__global__ void myGEMM1(const float* A,
+                        const float* B, 
+                            float* C) {
     
     // Thread identifiers
     const int globalRow = threadIdx.x + blockIdx.x * blockDim.x;
