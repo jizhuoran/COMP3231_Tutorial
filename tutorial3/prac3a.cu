@@ -69,7 +69,7 @@ int main(int argc, const char **argv) {
   dim3 numBlocks(M / TS, N / TS);
 
 
-  myGEMM1<<<(numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
+  myGEMM1<<<numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, M * N * sizeof(float), cudaMemcpyDeviceToHost) );
 
