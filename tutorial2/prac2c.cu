@@ -19,7 +19,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 const int N = 33 * 1024 * 1024;
 const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
-const int num_per_thread = N / (blocksPerGrid * threadsPerBlock)
+const int num_per_thread = N / (blocksPerGrid * threadsPerBlock);
 
 __global__ void dot(float* a, float* b, float* c) {
 	__shared__ float cache[threadsPerBlock];
