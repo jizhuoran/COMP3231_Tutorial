@@ -35,11 +35,7 @@ __global__ void dot(float* a, float* b, float* c) {
 	}
 	
 	// set the cache values
-
-	for (int i = 0; i < 16; ++i) {
-		cache[cacheIndex] += (temp + i);
-	}
-	
+	cache[cacheIndex] = temp;
 	
 	// synchronize threads in this block
 	__syncthreads();
