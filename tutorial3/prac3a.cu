@@ -46,7 +46,7 @@ int main(int argc, const char **argv) {
 
 
 
-  float* a,b,c;
+  float *a, *b, *c;
   a = (float*) malloc(sizeof(float) * M * K);  
   b = (float*) malloc(sizeof(float) * K * N);  
   c = (float*) malloc(sizeof(float) * M * N);  

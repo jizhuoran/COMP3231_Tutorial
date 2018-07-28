@@ -13,7 +13,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 
 
-const int M = 512, K = 512, N = 512;
+const int M = 2048, K = 2048, N = 2048;
 const int TS = 32;
 
 
@@ -67,7 +67,11 @@ int main(int argc, const char **argv) {
 
 
 
-  float a[M*N], b[M*N], c[M*N];
+
+  float *a, *b, *c;
+  a = (float*) malloc(sizeof(float) * M * K);  
+  b = (float*) malloc(sizeof(float) * K * N);  
+  c = (float*) malloc(sizeof(float) * M * N);  
   float *dev_a, *dev_b, *dev_c;
 
   printf( "come to here!!!");
