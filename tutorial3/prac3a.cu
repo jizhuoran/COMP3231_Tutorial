@@ -24,7 +24,11 @@ __global__ void myGEMM1(const float* A,
     // Thread identifiers
     const int globalRow = threadIdx.x + blockIdx.x * blockDim.x;
     const int globalCol = threadIdx.y + blockIdx.y * blockDim.y;
- 
+    
+
+    printf("Hello from block %d, thread %d\n", globalRow, globalCol);
+
+    
     // Compute a single element (loop over K)
     float acc = 0.0f;
     for (int k=0; k<K; k++) {
