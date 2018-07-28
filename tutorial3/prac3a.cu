@@ -69,14 +69,25 @@ int main(int argc, const char **argv) {
   dim3 numBlocks(M / TS, N / TS);
 
 
-  myGEMM1<<<numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
 
+  float time;
+  cudaEvent_t start, stop;
+
+  CUDA_CHECK(cudaEventCreate(&start));
+  CUDA_CHECK(cudaEventCreate(&stop));
+  CUDA_CHECK(cudaEventRecord(start, 0));
+
+
+  myGEMM1<<<numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
+  
   CUDA_CHECK( cudaMemcpy(c, dev_c, M * N * sizeof(float), cudaMemcpyDeviceToHost) );
 
+  CUDA_CHECK(cudaEventRecord(stop, 0));
+  CUDA_CHECK(cudaEventSynchronize(stop));
+  CUDA_CHECK(cudaEventElapsedTime(&time, start, stop));
 
-  for( int i = 0; i < M*N; i++ ){
-    printf( "cpu: %f, gpu: %f\n", c[i], c[i]);
-  }
+  printf("Time to generate:  %3.1f ms \n", time);
+
 
   CUDA_CHECK( cudaFree(dev_a) );
   CUDA_CHECK( cudaFree(dev_b) );
