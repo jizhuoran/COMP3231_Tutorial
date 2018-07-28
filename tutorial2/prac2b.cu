@@ -21,7 +21,8 @@ const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
 __global__ void dot(float* a, float* b, float* c) {
-	__shared__ float cache[threadsPerBlock];
+	
+	float cache[threadsPerBlock];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int cacheIndex = threadIdx.x;
 	
@@ -77,8 +78,7 @@ int main (void) {
 	CUDA_CHECK(cudaMemcpy(dev_a, a, N*sizeof(float), cudaMemcpyHostToDevice));
 	CUDA_CHECK(cudaMemcpy(dev_b, b, N*sizeof(float), cudaMemcpyHostToDevice));
 	
-
-
+	
 	float time;
 	cudaEvent_t start, stop;
 
