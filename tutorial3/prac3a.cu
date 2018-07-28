@@ -44,6 +44,8 @@ int main(int argc, const char **argv) {
   float a[M*N], b[M*N], c[M*N];
   float *dev_a, *dev_b, *dev_c;
 
+  printf( "come to here!!!");
+  
   for(int i = 0; i < M*N; i++) {
     a[i] = -i;
     b[i] = i * i;
