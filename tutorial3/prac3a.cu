@@ -32,7 +32,7 @@ __global__ void myGEMM1(const float* A,
     }
  
     // Store the result
-    C[globalCol*M + globalRow] = 1;
+    C[globalCol*M + globalRow] += 1;
 }
 
 
