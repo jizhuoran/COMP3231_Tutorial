@@ -16,16 +16,16 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 const int M = 1024, K = 1024, N = 1024;
 const int TS = 32;
 
-__global__ void myGEMM1(const int* A,
-                        const int* B, 
-                              int* C) {
+__global__ void myGEMM1(const float* A,
+                        const float* B, 
+                              float* C) {
     
     // Thread identifiers
     const int globalRow = threadIdx.x + blockIdx.x * blockDim.x;
     const int globalCol = threadIdx.y + blockIdx.y * blockDim.y;
  
     // Compute a single element (loop over K)
-    int acc = 0;
+    float acc = 0.0f;
     for (int k=0; k<K; k++) {
         acc += A[k*M + globalRow] * B[globalCol*K + k];
     }
@@ -41,28 +41,28 @@ int main(int argc, const char **argv) {
 
 
 
-  int a[N], b[N], c[N];
-  int *dev_a, *dev_b, *dev_c;
+  float a[N], b[N], c[N];
+  float *dev_a, *dev_b, *dev_c;
 
   for(int i = 0; i < N; i++) {
     a[i] = -i;
     b[i] = i * i;
   }
 
-  CUDA_CHECK( cudaMalloc((void**)&dev_a, N * sizeof(int)) );
-  CUDA_CHECK( cudaMalloc((void**)&dev_b, N * sizeof(int)) );
-  CUDA_CHECK( cudaMalloc((void**)&dev_c, N * sizeof(int)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_a, N * sizeof(float)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_b, N * sizeof(float)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_c, N * sizeof(float)) );
 
-  CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice) );
-  CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice) );
+  CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(float), cudaMemcpyHostToDevice) );
+  CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(float), cudaMemcpyHostToDevice) );
 
   myGEMM1<<<(M / TS,N / TS), (TS, TS)>>>(dev_a, dev_b, dev_c);
 
-  CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
+  CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(float), cudaMemcpyDeviceToHost) );
 
 
-  for( int i = 0; i < N; i++ ){
-    printf( "cpu: %d, gpu: %d\n", a[i]+b[i], c[i]);
+  for( int i = 0; i < M*N; i++ ){
+    printf( "cpu: %d, gpu: %d\n", c[i], c[i]);
   }
 
   CUDA_CHECK( cudaFree(dev_a) );
