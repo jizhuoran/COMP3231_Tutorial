@@ -16,16 +16,16 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 const int M = 1024, K = 1024, N = 1024;
 const int TS = 32;
 
-__global__ void myGEMM1(const float* A,
-                        const float* B, 
-                            float* C) {
+__global__ void myGEMM1(const int* A,
+                        const int* B, 
+                              int* C) {
     
     // Thread identifiers
     const int globalRow = threadIdx.x + blockIdx.x * blockDim.x;
     const int globalCol = threadIdx.y + blockIdx.y * blockDim.y;
  
     // Compute a single element (loop over K)
-    float acc = 0.0f;
+    int acc = 0;
     for (int k=0; k<K; k++) {
         acc += A[k*M + globalRow] * B[globalCol*K + k];
     }
