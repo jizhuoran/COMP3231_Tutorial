@@ -17,25 +17,46 @@ const int M = 1024, K = 1024, N = 1024;
 const int TS = 32;
 
 
-__global__ void myGEMM1(const float* A,
+__global__ void myGEMM2(const float* A,
                         const float* B, 
                               float* C) {
     
     // Thread identifiers
-    const int globalRow = threadIdx.x + blockIdx.x * blockDim.x;
-    const int globalCol = threadIdx.y + blockIdx.y * blockDim.y;
-    
-
-    // printf("Hello from block %d, thread %d\n", globalRow, globalCol);
-
-
-    // Compute a single element (loop over K)
+    const int row = threadIdx.x; // Local row ID (max: TS)
+    const int col = threadIdx.y; // Local col ID (max: TS)
+    const int globalRow = row + blockIdx.x * blockDim.x;
+    const int globalCol = col + blockIdx.y * blockDim.y;
+ 
+    // Local memory to fit a tile of TS*TS elements of A and B
+    __shared__ float Asub[TS][TS];
+    __shared__ float Bsub[TS][TS];
+ 
+    // Initialise the accumulation register
     float acc = 0.0f;
-    for (int k=0; k<K; k++) {
-        acc += A[k*M + globalRow] * B[globalCol*K + k];
+    
+    // Loop over all tiles
+    const int numTiles = K/TS;
+    for (int t=0; t<numTiles; t++) {
+ 
+        // Load one tile of A and B into local memory
+        const int tiledRow = TS*t + row;
+        const int tiledCol = TS*t + col;
+        Asub[col][row] = A[tiledCol*M + globalRow];
+        Bsub[col][row] = B[globalCol*K + tiledRow];
+ 
+        // Synchronise to make sure the tile is loaded
+        __syncthreads();
+ 
+        // Perform the computation for a single tile
+        for (int k=0; k<TS; k++) {
+            acc += Asub[k][row] * Bsub[col][k];
+        }
+ 
+        // Synchronise before loading the next tile
+        __syncthreads();
     }
  
-    // Store the result
+    // Store the final result in C
     C[globalCol*M + globalRow] = acc;
 }
 
