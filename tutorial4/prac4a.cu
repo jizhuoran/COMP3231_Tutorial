@@ -6,9 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BLOCK_NUM 16
-#define THREAD_NUM 64
-#define N (BLOCK_NUM * THREAD_NUM)
+#define N (1024 * 1024)
 
 
 static void cuda_checker(cudaError_t err, const char *file, int line ) {
@@ -64,14 +62,36 @@ int main(int argc, const char **argv) {
   CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice) );
   CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice) );
 
+
+  float time;
+  cudaEvent_t start, stop;
+
+  CUDA_CHECK(cudaEventCreate(&start));
+  CUDA_CHECK(cudaEventCreate(&stop));
+  CUDA_CHECK(cudaEventRecord(start, 0));
+
+
   add<<<N,1>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
 
+  CUDA_CHECK(cudaEventRecord(stop, 0));
+  CUDA_CHECK(cudaEventSynchronize(stop));
+  CUDA_CHECK(cudaEventElapsedTime(&time, start, stop));
 
-  for( int i = 0; i < N; i++ ){
-    printf( "cpu: %d, gpu: %d\n", a[i]+b[i], c[i]);
-  }
+  printf("Time to generate:  %3.1f ms \n", time);
+
+  // for( int i = 0; i < N; i++ ){
+  //   int cpu_value = 0;
+
+  //   if (i % 2 == 0) {
+  //     a[i]+b[i];
+  //   } else {
+  //     a[i]-b[i];
+  //   }
+
+  //   printf( "cpu: %d, gpu: %d\n", cpu_value, c[i]);
+  // }
 
   CUDA_CHECK( cudaFree(dev_a) );
   CUDA_CHECK( cudaFree(dev_b) );
