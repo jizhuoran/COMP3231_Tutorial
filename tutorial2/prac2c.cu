@@ -21,24 +21,22 @@ const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 const int num_per_thread = N / (blocksPerGrid * threadsPerBlock);
 
+
+__device__ float cache[threadsPerBlock * blocksPerGrid];
+
 __global__ void dot(float* a, float* b, float* c) {
-	__shared__ float cache[threadsPerBlock];
+	
+	
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	int cacheIndex = threadIdx.x;
+	int cacheIndex = tid;
 	
 	float temp = 0;
-
 	for (int i = 0; i < num_per_thread; ++i) {
 
 		if (tid * num_per_thread + i) {
 			temp += a[tid * num_per_thread + i] * b[tid * num_per_thread + i];
 		}
 	}
-
-	// while (tid < N){
-	// 	temp += a[tid] * b[tid];
-	// 	tid += blockDim.x * gridDim.x;
-	// }
 	
 	// set the cache values
 	cache[cacheIndex] = temp;
@@ -50,14 +48,14 @@ __global__ void dot(float* a, float* b, float* c) {
 	// because of the following code
 	int i = blockDim.x/2;
 	while (i != 0){
-		if (cacheIndex < i)
+		if (cacheIndex < i + blockIdx.x * blockDim.x)
 			cache[cacheIndex] += cache[cacheIndex + i];
 		__syncthreads();
 		i /= 2;
 	}
 	
-	if (cacheIndex == 0)
-		c[blockIdx.x] = cache[0];
+	if (cacheIndex % blockDim.x == 0)
+		c[blockIdx.x] = cache[blockIdx.x * blockDim.x];
 }
 
 
@@ -86,8 +84,7 @@ int main (void) {
 	CUDA_CHECK(cudaMemcpy(dev_a, a, N*sizeof(float), cudaMemcpyHostToDevice));
 	CUDA_CHECK(cudaMemcpy(dev_b, b, N*sizeof(float), cudaMemcpyHostToDevice));
 	
-
-
+	
 	float time;
 	cudaEvent_t start, stop;
 
