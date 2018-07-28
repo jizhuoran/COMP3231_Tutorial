@@ -13,8 +13,8 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 
 
-const int M = 256, K = 256, N = 256;
-const int TS = 32;
+const int M = 16, K = 16, N = 16;
+const int TS = 4;
 
 
 __global__ void myGEMM1(const float* A,
