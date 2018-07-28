@@ -13,7 +13,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 
 
-const int M = 1024, K = 1024, N = 1024;
+const int M = 256, K = 256, N = 256;
 const int TS = 32;
 
 
@@ -99,7 +99,7 @@ int main(int argc, const char **argv) {
   CUDA_CHECK(cudaEventRecord(start, 0));
 
 
-  myGEMM1<<<numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
+  myGEMM2<<<numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
   
   CUDA_CHECK( cudaMemcpy(c, dev_c, M * N * sizeof(float), cudaMemcpyDeviceToHost) );
 
