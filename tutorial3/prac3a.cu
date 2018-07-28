@@ -13,8 +13,9 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 
 
-const int M = 1024, K = 1024, N = 1024;
+const int M = 256, K = 256, N = 256;
 const int TS = 32;
+
 
 __global__ void myGEMM1(const float* A,
                         const float* B, 
@@ -45,7 +46,7 @@ int main(int argc, const char **argv) {
   float *dev_a, *dev_b, *dev_c;
 
   printf( "come to here!!!");
-  
+
   for(int i = 0; i < M*N; i++) {
     a[i] = -i;
     b[i] = i * i;
