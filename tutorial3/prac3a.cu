@@ -49,16 +49,16 @@ int main(int argc, const char **argv) {
     b[i] = i * i;
   }
 
-  CUDA_CHECK( cudaMalloc((void**)&dev_a, N * sizeof(float)) );
-  CUDA_CHECK( cudaMalloc((void**)&dev_b, N * sizeof(float)) );
-  CUDA_CHECK( cudaMalloc((void**)&dev_c, N * sizeof(float)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_a, M * N * sizeof(float)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_b, M * N  * sizeof(float)) );
+  CUDA_CHECK( cudaMalloc((void**)&dev_c, M * N  * sizeof(float)) );
 
-  CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(float), cudaMemcpyHostToDevice) );
-  CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(float), cudaMemcpyHostToDevice) );
+  CUDA_CHECK( cudaMemcpy(dev_a, a, M * N * sizeof(float), cudaMemcpyHostToDevice) );
+  CUDA_CHECK( cudaMemcpy(dev_b, b, M * N * sizeof(float), cudaMemcpyHostToDevice) );
 
   myGEMM1<<<(M / TS,N / TS), (TS, TS)>>>(dev_a, dev_b, dev_c);
 
-  CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(float), cudaMemcpyDeviceToHost) );
+  CUDA_CHECK( cudaMemcpy(c, dev_c, M * N * sizeof(float), cudaMemcpyDeviceToHost) );
 
 
   for( int i = 0; i < M*N; i++ ){
