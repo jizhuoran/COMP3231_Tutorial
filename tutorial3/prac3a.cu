@@ -49,6 +49,8 @@ int main(int argc, const char **argv) {
     b[i] = i * i;
   }
 
+  printf( "come to here!!!");
+
   CUDA_CHECK( cudaMalloc((void**)&dev_a, M * N * sizeof(float)) );
   CUDA_CHECK( cudaMalloc((void**)&dev_b, M * N  * sizeof(float)) );
   CUDA_CHECK( cudaMalloc((void**)&dev_c, M * N  * sizeof(float)) );
