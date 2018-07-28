@@ -13,7 +13,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 
 
-const int M = 256, K = 256, N = 256;
+const int M = 512, K = 512, N = 512;
 const int TS = 32;
 
 
