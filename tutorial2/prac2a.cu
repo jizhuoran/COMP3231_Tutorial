@@ -17,7 +17,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 #define imin(a,b) (a<b?a:b)
 
 const int N = 33 * 1024 * 1024;
-const int threadsPerBlock = 32;
+const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
 __global__ void dot(float* a, float* b, float* c) {
@@ -32,7 +32,10 @@ __global__ void dot(float* a, float* b, float* c) {
 	}
 	
 	// set the cache values
-	cache[cacheIndex] = temp;
+	
+	for (int i = 0; i < 16; ++i) {
+		cache[cacheIndex] = temp;
+	}
 	
 	// synchronize threads in this block
 	__syncthreads();
