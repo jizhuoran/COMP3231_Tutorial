@@ -22,9 +22,9 @@ const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
 __global__ void dot(float* a, float* b, float* c) {
 	
-	float cache[threadsPerBlock];
+	float cache[threadsPerBlock * blocksPerGrid];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	int cacheIndex = threadIdx.x;
+	int cacheIndex = tid;
 	
 	float temp = 0;
 	while (tid < N){
@@ -48,8 +48,8 @@ __global__ void dot(float* a, float* b, float* c) {
 		i /= 2;
 	}
 	
-	if (cacheIndex == 0)
-		c[blockIdx.x] = cache[0];
+	if (cacheIndex % blockDim.x == 0)
+		c[blockIdx.x] = cache[blockIdx.x * blockDim.x];
 }
 
 

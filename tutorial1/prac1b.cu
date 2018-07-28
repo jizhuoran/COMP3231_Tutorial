@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BLOCK_NUM 64
-#define THREAD_NUM 1024
+#define BLOCK_NUM 16
+#define THREAD_NUM 64
 #define N (BLOCK_NUM * THREAD_NUM)
 
 //
