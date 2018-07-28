@@ -41,10 +41,10 @@ int main(int argc, const char **argv) {
 
 
 
-  float a[N], b[N], c[N];
+  float a[M*N], b[M*N], c[M*N];
   float *dev_a, *dev_b, *dev_c;
 
-  for(int i = 0; i < N; i++) {
+  for(int i = 0; i < M*N; i++) {
     a[i] = -i;
     b[i] = i * i;
   }
@@ -62,7 +62,7 @@ int main(int argc, const char **argv) {
 
 
   for( int i = 0; i < M*N; i++ ){
-    printf( "cpu: %d, gpu: %d\n", c[i], c[i]);
+    printf( "cpu: %f, gpu: %f\n", c[i], c[i]);
   }
 
   CUDA_CHECK( cudaFree(dev_a) );
