@@ -20,7 +20,7 @@ const int N = 33 * 1024 * 1024;
 const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
-__device__ float cache[threadsPerBlock * blocksPerGrid];
+__global__ float cache[threadsPerBlock * blocksPerGrid];
 
 __global__ void dot(float* a, float* b, float* c) {
 	
