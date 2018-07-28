@@ -52,8 +52,8 @@ int main(int argc, const char **argv) {
   printf( "come to here!!!");
 
   for(int i = 0; i < M*N; i++) {
-    a[i] = -i;
-    b[i] = i * i;
+    a[i] = 1;
+    b[i] = 1;
   }
 
   printf( "come to here!!!");
