@@ -56,7 +56,7 @@ int main(int argc, const char **argv) {
   CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice) );
   CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice) );
 
-  add<<<(M / TS,N / TS), (TS, TS)>>>(dev_a, dev_b, dev_c);
+  myGEMM1<<<(M / TS,N / TS), (TS, TS)>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
 
