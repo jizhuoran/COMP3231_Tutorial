@@ -28,7 +28,7 @@ __global__ void myGEMM1(const float* A,
 
     printf("Hello from block %d, thread %d\n", globalRow, globalCol);
 
-    
+
     // Compute a single element (loop over K)
     float acc = 0.0f;
     for (int k=0; k<K; k++) {
@@ -65,7 +65,11 @@ int main(int argc, const char **argv) {
   CUDA_CHECK( cudaMemcpy(dev_a, a, M * N * sizeof(float), cudaMemcpyHostToDevice) );
   CUDA_CHECK( cudaMemcpy(dev_b, b, M * N * sizeof(float), cudaMemcpyHostToDevice) );
 
-  myGEMM1<<<(M / TS,N / TS), (TS, TS)>>>(dev_a, dev_b, dev_c);
+  dim3 threadsPerBlock(TS, TS);
+  dim3 numBlocks(M / TS, N / TS);
+
+
+  myGEMM1<<<(numBlocks, threadsPerBlock>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, M * N * sizeof(float), cudaMemcpyDeviceToHost) );
 
