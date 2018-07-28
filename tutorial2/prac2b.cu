@@ -37,7 +37,7 @@ __global__ void dot(float* a, float* b, float* c) {
 	// set the cache values
 
 	for (int i = 0; i < 16; ++i) {
-		cache[cacheIndex] += temp;
+		cache[cacheIndex] += (temp + i);
 	}
 	
 	
