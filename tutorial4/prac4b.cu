@@ -6,7 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define N (1024 * 1024)
+#define BLOCK_NUM (1024 * 32)
+#define THREAD_NUM 32
+#define N (BLOCK_NUM * THREAD_NUM)
+
 
 
 static void cuda_checker(cudaError_t err, const char *file, int line ) {
@@ -25,7 +28,7 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 
 __global__ void add(int *a, int *b, int *c) {
 
-  int tid = blockIdx.x; // handle the data at this index
+  int tid = threadIdx.x + blockIdx.x * blockDim.x; // handle the data at this index
   
   if (tid < N) {
     if(tid < N / 2) {
@@ -74,7 +77,7 @@ int main(int argc, const char **argv) {
   CUDA_CHECK(cudaEventRecord(start, 0));
 
 
-  add<<<N,1>>>(dev_a, dev_b, dev_c);
+  add<<<BLOCK_NUM, THREAD_NUM>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
 

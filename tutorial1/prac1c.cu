@@ -6,7 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define N 1024
+#define BLOCK_NUM 16
+#define THREAD_NUM 64
+#define N (BLOCK_NUM * THREAD_NUM)
 
 
 static void cuda_checker(cudaError_t err, const char *file, int line ) {
