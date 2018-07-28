@@ -42,7 +42,7 @@ __global__ void dot(float* a, float* b, float* c) {
 	// because of the following code
 	int i = blockDim.x/2;
 	while (i != 0){
-		if (cacheIndex < i)
+		if (cacheIndex < i + blockIdx.x * blockDim.x)
 			cache[cacheIndex] += cache[cacheIndex + i];
 		__syncthreads();
 		i /= 2;
