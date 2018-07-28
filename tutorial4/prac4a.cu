@@ -76,7 +76,7 @@ int main(int argc, const char **argv) {
   CUDA_CHECK(cudaEventRecord(start, 0));
 
 
-  add<<<NBLOCK_NUM, THREAD_NUM>>>(dev_a, dev_b, dev_c);
+  add<<<BLOCK_NUM, THREAD_NUM>>>(dev_a, dev_b, dev_c);
 
   CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
 
