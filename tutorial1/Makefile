@@ -15,5 +15,8 @@ prac1b:	prac1b.cu Makefile
 prac1c:	prac1c.cu Makefile
 	nvcc prac1c.cu -o prac1c $(INC) $(NVCCFLAGS) $(LIB)
 
+prac1d:	prac1d.cu Makefile
+	nvcc prac1d.cu -o prac1d $(INC) $(NVCCFLAGS) $(LIB)
+
 clean:
-	rm -f prac1a prac1b prac1c
+	rm -f prac1a prac1b prac1c prac1d

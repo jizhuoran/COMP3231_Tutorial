@@ -4,7 +4,7 @@ LIB	:= -L$(CUDA_HOME)/lib64 -lcudart
 
 NVCCFLAGS	:= -lineinfo -arch=sm_35 --ptxas-options=-v --use_fast_math
 
-all:	prac2a prac2b prac2c
+all:	prac2a prac2b
 
 prac2a:	prac2a.cu Makefile
 	nvcc prac2a.cu -o prac2a $(INC) $(NVCCFLAGS) $(LIB)
@@ -12,8 +12,5 @@ prac2a:	prac2a.cu Makefile
 prac2b:	prac2b.cu Makefile
 	nvcc prac2b.cu -o prac2b $(INC) $(NVCCFLAGS) $(LIB)
 
-prac2c:	prac2c.cu Makefile
-	nvcc prac2c.cu -o prac2c $(INC) $(NVCCFLAGS) $(LIB)
-
 clean:
-	rm -f prac2a prac2b prac2c
+	rm -f prac2a prac2b

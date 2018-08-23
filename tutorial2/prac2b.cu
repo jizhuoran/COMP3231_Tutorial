@@ -20,13 +20,10 @@ const int N = 33 * 1024 * 1024;
 const int threadsPerBlock = 256;
 const int blocksPerGrid = imin(32, (N+threadsPerBlock-1) / threadsPerBlock);
 
-__device__ float cache[threadsPerBlock * blocksPerGrid];
-
 __global__ void dot(float* a, float* b, float* c) {
-	
-	
+	__shared__ float cache[threadsPerBlock];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	int cacheIndex = tid;
+	int cacheIndex = threadIdx.x;
 	
 	float temp = 0;
 	while (tid < N){
@@ -44,14 +41,14 @@ __global__ void dot(float* a, float* b, float* c) {
 	// because of the following code
 	int i = blockDim.x/2;
 	while (i != 0){
-		if (cacheIndex < i + blockIdx.x * blockDim.x)
+		if (cacheIndex < i)
 			cache[cacheIndex] += cache[cacheIndex + i];
 		__syncthreads();
 		i /= 2;
 	}
 	
-	if (cacheIndex % blockDim.x == 0)
-		c[blockIdx.x] = cache[blockIdx.x * blockDim.x];
+	if (cacheIndex == 0)
+		c[blockIdx.x] = cache[0];
 }
 
 
@@ -80,7 +77,8 @@ int main (void) {
 	CUDA_CHECK(cudaMemcpy(dev_a, a, N*sizeof(float), cudaMemcpyHostToDevice));
 	CUDA_CHECK(cudaMemcpy(dev_b, b, N*sizeof(float), cudaMemcpyHostToDevice));
 	
-	
+
+
 	float time;
 	cudaEvent_t start, stop;
 
