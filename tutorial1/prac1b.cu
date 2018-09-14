@@ -1,27 +1,11 @@
-//
-// include files
-//
-
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-
-#define BLOCK_NUM 16
-#define THREAD_NUM 64
-#define N (BLOCK_NUM * THREAD_NUM)
 
 //
 // kernel code
 // 
 
-__global__ void add(int *a, int *b, int *c) {
-
-  int tid = blockIdx.x; // handle the data at this index
-  
-  if(tid < N) {
-    c[tid] = a[tid] + b[tid];
-  }
-
+__global__ void my_first_kernel() {
+  printf("Hello from block (%d, %d), thread (%d, %d)\n", blockIdx.x, blockIdx.y, threadIdx.x, threadIdx.y);
 }
 
 
@@ -29,37 +13,20 @@ __global__ void add(int *a, int *b, int *c) {
 // host code
 //
 
-int main(int argc, const char **argv) {
+int main(int argc, char **argv) {
+
+  // set number of blocks, and threads per block
+
+  dim3 blocks_2d = dim3(2, 2);
+  dim3 threads_2d = dim3(3, 3);
 
 
+  
+  // lanuch the kernel
 
-  int a[N], b[N], c[N];
-  int *dev_a, *dev_b, *dev_c;
+  my_first_kernel<<<blocks_2d,threads_2d>>>();
 
-  for(int i = 0; i < N; i++) {
-    a[i] = -i;
-    b[i] = i * i;
-  }
-
-  cudaMalloc((void**)&dev_a, N * sizeof(int));
-  cudaMalloc((void**)&dev_b, N * sizeof(int));
-  cudaMalloc((void**)&dev_c, N * sizeof(int));
-
-  cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice);
-
-  add<<<N,1>>>(dev_a, dev_b, dev_c);
-
-  cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost);
-
-
-  for( int i = 0; i < N; i++ ){
-    printf( "cpu: %d, gpu: %d\n", a[i]+b[i], c[i]);
-  }
-
-  cudaFree(dev_a);
-  cudaFree(dev_b);
-  cudaFree(dev_c);
+  // CUDA exit -- needed to flush printf write buffer
 
   cudaDeviceReset();
 

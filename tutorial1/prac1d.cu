@@ -59,23 +59,14 @@ int main(int argc, const char **argv) {
   CUDA_CHECK( cudaMemcpy(dev_a, a, N * sizeof(int), cudaMemcpyHostToDevice) );
   CUDA_CHECK( cudaMemcpy(dev_b, b, N * sizeof(int), cudaMemcpyHostToDevice) );
 
-
-  float time;
-  cudaEvent_t start, stop;
-
-  CUDA_CHECK(cudaEventCreate(&start));
-  CUDA_CHECK(cudaEventCreate(&stop));
-  CUDA_CHECK(cudaEventRecord(start, 0));
-
-
   add<<<N,1>>>(dev_a, dev_b, dev_c);
-  
-  CUDA_CHECK(cudaEventRecord(stop, 0));
-  CUDA_CHECK(cudaEventSynchronize(stop));
-  CUDA_CHECK(cudaEventElapsedTime(&time, start, stop));
 
-  printf("Time to generate:  %3.1f ms \n", time);
+  CUDA_CHECK( cudaMemcpy(c, dev_c, N * sizeof(int), cudaMemcpyDeviceToHost) );
 
+
+  for( int i = 0; i < N; i++ ){
+    printf( "cpu: %d, gpu: %d\n", a[i]+b[i], c[i]);
+  }
 
   CUDA_CHECK( cudaFree(dev_a) );
   CUDA_CHECK( cudaFree(dev_b) );
