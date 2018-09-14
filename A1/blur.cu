@@ -119,32 +119,23 @@ void writePPM(const char *filename, PPMImage *img)
     fclose(fp);
 }
 
-void changeColorPPM(PPMImage *img)
-{
-    int i;
-    if(img){
 
-         for(i=0;i<img->x*img->y;i++){
-              img->data[i].red=RGB_COMPONENT_COLOR-img->data[i].red;
-              img->data[i].green=RGB_COMPONENT_COLOR-img->data[i].green;
-              img->data[i].blue=RGB_COMPONENT_COLOR-img->data[i].blue;
-         }
-    }
-}
+__global__ void blur_kernel() {
 
-__global__ void my_first_kernel() {
-  printf("Hello from block %d, thread %d\n", blockIdx.x, threadIdx.x);
+    //kernel code
+
 }
 
 void your_gaussian_blur_func(PPMImage *img) {
-  my_first_kernel<<<4,8>>>();
+    
+    //host code 
+
 }
 
 int main(){
     PPMImage *image;
     image = readPPM("input.ppm");
 
-    changeColorPPM(image);
     your_gaussian_blur_func(image);
 
     writePPM("output.ppm",image);

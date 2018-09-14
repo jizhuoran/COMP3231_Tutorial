@@ -84,7 +84,7 @@ void julia_set_gpu() {
 		wirte the host code here
 	*/
 	
-	//kernel<<<grid,1>>>(dev_bitmap);
+	//kernel<<<1,1>>>(dev_bitmap);
 
 	/*
 		write the code to copy the data back
