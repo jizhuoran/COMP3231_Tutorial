@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BLOCK_NUM 16
-#define THREAD_NUM 64
-#define N (BLOCK_NUM * THREAD_NUM)
+// #define BLOCK_NUM 16
+// #define THREAD_NUM 64
+#define N 1024*1024
 
 
 static void cuda_checker(cudaError_t err, const char *file, int line ) {
@@ -25,12 +25,27 @@ static void cuda_checker(cudaError_t err, const char *file, int line ) {
 // kernel code
 // 
 
-__global__ void add(int *a, int *b, int *c) {
+__global__ void add(int *a, int *b, int *c, int *d, int *e, int *f, int *g) {
 
   int tid = blockIdx.x; // handle the data at this index
   
+  int local[6];
+
+  local[0] = a[tid];
+  local[1] = b[tid];
+  local[2] = c[tid];
+  local[3] = d[tid];
+  local[4] = e[tid];
+  local[5] = f[tid];
+
+  __syncthreads();
+
   if(tid < N) {
-    c[tid] = a[tid] + b[tid];
+    int sum = 0;
+    for (int i = 0; i < 6; ++i) {
+      sum += local[i];
+    }
+    g[tid] = sum;
   }
 
 }
@@ -44,8 +59,18 @@ int main(int argc, const char **argv) {
 
 
 
-  int a[N], b[N], c[N], d[N], e[N], f[N], g[N];
+  int *a, *b, *c, *d, *e, *f, *g;
   int *dev_a, *dev_b, *dev_c, *dev_d, *dev_e, *dev_f, *dev_g;
+
+
+  a = (int*) malloc(sizeof(int) * N);
+  b = (int*) malloc(sizeof(int) * N);
+  c = (int*) malloc(sizeof(int) * N);
+  d = (int*) malloc(sizeof(int) * N);
+  e = (int*) malloc(sizeof(int) * N);
+  f = (int*) malloc(sizeof(int) * N);
+  g = (int*) malloc(sizeof(int) * N);
+
 
   for(int i = 0; i < N; i++) {
     a[i] = -i;
@@ -80,7 +105,7 @@ int main(int argc, const char **argv) {
   CUDA_CHECK(cudaEventRecord(start, 0));
 
 
-  add<<<N,1>>>(dev_a, dev_b, dev_c, dev_d, dev_e, dev_f);
+  add<<<1024,N/1024>>>(dev_a, dev_b, dev_c, dev_d, dev_e, dev_f, dev_g);
 
   CUDA_CHECK( cudaMemcpy(g, dev_g, N * sizeof(int), cudaMemcpyDeviceToHost) );
 

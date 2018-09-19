@@ -6,11 +6,11 @@ NVCCFLAGS := -lineinfo -arch=sm_35 --ptxas-options=-v --use_fast_math
 all: julia blur
 
 julia: julia.cu Makefile
-	nvcc julia.cu -o julia $(INC) $(NVCCFLAGS) $(LIB)
+	/usr/local/cuda-9.2/bin/nvcc julia.cu -o julia $(INC) $(NVCCFLAGS) $(LIB)
 
 
 blur: blur.cu Makefile
-	nvcc blur.cu -o blur $(INC) $(NVCCFLAGS) $(LIB)
+	/usr/local/cuda-9.2/bin/nvcc blur.cu -o blur $(INC) $(NVCCFLAGS) $(LIB)
 
 
 clean:
